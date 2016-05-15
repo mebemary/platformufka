@@ -1,9 +1,8 @@
 #include "main.h"
 #include "Logic.h"
+#include "Input.h"
 
 #include <thread>
-
-sf::CircleShape circle(50.0f);
 
 const sf::Time LOGIC_TICK_DELTA = sf::milliseconds(10);
 
@@ -45,23 +44,13 @@ int main() {
 	sf::Clock clock;
 	Logic logic(LOGIC_TICK_DELTA);
 
-	circle.setFillColor(sf::Color::Magenta);
-	circle.setPosition({ 20.0f, 20.0f });
-
 	while (window.isOpen()) {
 		sf::Time delta = clock.restart();
 		
 		updateInput(window);
 		
 		logic.update(delta, input);
-
-		window.clear();
-
-		circle.setPosition(logic.getCirclePosition());
-
-		window.draw(circle);
-
-		window.display();
+		logic.render(window);		
 	}
 
 	char c;
