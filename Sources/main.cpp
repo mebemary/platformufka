@@ -49,10 +49,14 @@ int main() {
 		
 		updateInput(window);
 		
-		logic.update(delta, input);
+		auto shouldGameRun = logic.update(delta, input);
+        if (!shouldGameRun) {
+            window.close();
+            break;
+        }
 		logic.render(window);		
 	}
 
-	char c;
-	std::cin >> c;
+	// char c;
+	// std::cin >> c;
 }

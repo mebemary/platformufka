@@ -1,43 +1,75 @@
 #pragma once
 
 #include <SFML/System.hpp>
+#include <memory>
+#include <stack>
+
 #include "Interpolation.h"
 #include "State.h"
 #include "Input.h"
 
-class Logic
+class Logic : public IStateStackable //, public IGameExitable
 {
-		sf::Time lag,
-			     logicTickDelta;
-		std::shared_ptr<State> currentState;
+        sf::Time lag,
+                 logicTickDelta;
+        std::shared_ptr<EventQueue> eventQueue;
+        std::stack<std::shared_ptr<State>> stateStack;
+        bool gameRunning = true;
 
-	public:
-		Logic(sf::Time logicTickDelta) :
-			logicTickDelta(logicTickDelta)
-		{
-			currentState = std::make_shared<CircleState>(logicTickDelta);
-		}
+        inline std::shared_ptr<State> getCurrentState() {
+            return stateStack.top();
+        }
 
-		void update(sf::Time timeElapsed, Input input)
-		{
-			lag += timeElapsed;
+    public:
+        Logic(sf::Time logicTickDelta) :
+            logicTickDelta(logicTickDelta), stateStack()
+        {
+            // auto selfPointer = nullptr; // std::make_shared<Logic>(this);
+            auto eventQueue = std::make_shared<EventQueue>(*this);
+            this->eventQueue = eventQueue;
+            // this->currentState = std::make_shared<CircleState>(logicTickDelta, eventQueue);
+            stateStack.push(std::make_shared<MenuState>(logicTickDelta, eventQueue));
+        }
 
-			while (lag > logicTickDelta) {			
-				currentState->update(input);
+        bool update(sf::Time timeElapsed, Input input)
+        {
+            lag += timeElapsed;
 
-				lag -= logicTickDelta;
-			}
-		}
+            while (lag > logicTickDelta) {
+                getCurrentState()->update(input);
 
-		void render(sf::RenderWindow &renderer)
-		{
-			renderer.clear();
+                if (!gameRunning) { return false; }
 
-			float interpolationFactor = lag / logicTickDelta;
+                lag -= logicTickDelta;
+            }
 
-			currentState->render(renderer, interpolationFactor);
+            return true;
+        }
 
-			renderer.display();
-		}
+        void render(sf::RenderWindow &renderer)
+        {
+            renderer.clear();
+
+            float interpolationFactor = lag / logicTickDelta;
+
+            getCurrentState()->render(renderer, interpolationFactor);
+
+            renderer.display();
+        }
+
+        inline void pushState(std::shared_ptr<State> newState)
+        {
+            stateStack.push(newState);
+        }
+
+        inline void popState()
+        {
+            stateStack.pop();
+        }
+
+        inline void exitGame()
+        {
+            gameRunning = false;
+        }
 };
 
