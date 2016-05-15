@@ -4,11 +4,8 @@
 #include <thread>
 
 sf::CircleShape circle(50.0f);
-sf::Vector2f currentCirclePosition { 20.0f, 20.0f },
-             nextCirclePosition = currentCirclePosition,
-	         circleDirection = { 0.0f, 0.0f };
-float circleSpeed = 400.0f; // pix / sec
-sf::Time logicTickDelta = sf::milliseconds(10);
+
+const sf::Time LOGIC_TICK_DELTA = sf::milliseconds(10);
 
 Input input;
 
@@ -21,68 +18,46 @@ void updateInput(sf::Window &window) {
 		}
 		else if (event.type == sf::Event::KeyPressed) {
 			switch (event.key.code) {
-			case sf::Keyboard::Up:    circleDirection.y = -1.0f; break;
-			case sf::Keyboard::Down:  circleDirection.y = 1.0f; break;
-			case sf::Keyboard::Left:  circleDirection.x = -1.0f; break;
-			case sf::Keyboard::Right: circleDirection.x = 1.0f; break;
+			case sf::Keyboard::Up:    input.jump=true; break;
+			case sf::Keyboard::Down:  input.crouch=true; break;
+			case sf::Keyboard::Left:  input.left=true; break;
+			case sf::Keyboard::Right: input.right=true; break;
+			case sf::Keyboard::Y:	  input.yes = true; break;
+			case sf::Keyboard::N:     input.no = true; break;
 			}
 		}
 		else if (event.type == sf::Event::KeyReleased) {
 			switch (event.key.code) {
-			case sf::Keyboard::Up:    circleDirection.y = 0.0f; break;
-			case sf::Keyboard::Down:  circleDirection.y = 0.0f; break;
-			case sf::Keyboard::Left:  circleDirection.x = 0.0f; break;
-			case sf::Keyboard::Right: circleDirection.x = 0.0f; break;
+			case sf::Keyboard::Up:    input.jump = false; break;
+			case sf::Keyboard::Down:  input.crouch = false; break;
+			case sf::Keyboard::Left:  input.left = false; break;
+			case sf::Keyboard::Right: input.right = false; break;
+			case sf::Keyboard::Y:	  input.yes = false; break;
+			case sf::Keyboard::N:     input.no = false; break;
 			}
 		}
 	}
 }
 
-void logicTick() {
-	auto deltaPosition = circleDirection * circleSpeed * logicTickDelta.asSeconds();
-	
-	currentCirclePosition = nextCirclePosition;
-	nextCirclePosition = currentCirclePosition + circleDirection * circleSpeed * logicTickDelta.asSeconds();
-}
-
-template<typename T>
-T interpolate(T from, T to, float factor) {
-	return from * factor + to * (1 - factor);
-}
-
-/*template<>
-sf::Vector2f interpolate(sf::Vector2f from, sf::Vector2f to, float factor) {
-	return from * factor + to * (1 - factor);
-}*/
-
 int main() {
 	sf::RenderWindow window(sf::VideoMode(800, 600, 32), "Hello SFML");
 	
 	sf::Clock clock;
-	sf::Time lag;
+	Logic logic(LOGIC_TICK_DELTA);
 
-	circle.setPosition(currentCirclePosition);
 	circle.setFillColor(sf::Color::Magenta);
+	circle.setPosition({ 20.0f, 20.0f });
 
 	while (window.isOpen()) {
 		sf::Time delta = clock.restart();
-		lag += delta;
-
-		// std::cout << "New lag: " << lag.asMilliseconds() << "ms (added " << delta.asMilliseconds() << "ms)" << std::endl;
-
-		while (lag > logicTickDelta) {
-			updateInput(window);
-			logicTick();
-
-			lag -= logicTickDelta;
-			// std::cout << "Frame! Lag left: " << lag.asMilliseconds() << "ms" << std::endl;
-		}
+		
+		updateInput(window);
+		
+		logic.update(delta, input);
 
 		window.clear();
 
-		float interpolationFactor = lag / logicTickDelta;
-
-		circle.setPosition(interpolate(currentCirclePosition, nextCirclePosition, interpolationFactor));
+		circle.setPosition(logic.getCirclePosition());
 
 		window.draw(circle);
 

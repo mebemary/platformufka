@@ -5,7 +5,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 include_directories(Sources)
 
-set(SOURCE_FILES Sources/main.cpp Sources/main.h Sources/Logic.h)
+set(SOURCE_FILES Sources/main.cpp Sources/main.h Sources/Logic.h Sources/Interpolation.h)
 add_executable(SFMLtest ${SOURCE_FILES})
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake_modules")
