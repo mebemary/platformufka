@@ -1,6 +1,8 @@
 #pragma once
 
+enum class KeyState { UP, PRESSED, DOWN, RELEASED };
+
 struct Input
 {
-	bool jump, crouch, left, right, yes, no;
+	KeyState jump, crouch, left, right, yes, no;
 };

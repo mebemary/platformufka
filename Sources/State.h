@@ -3,9 +3,11 @@
 #include <SFML/Graphics.hpp>
 #include <exception>
 #include <memory>
+#include <cmath>
 
 #include "EventQueue.h"
 #include "Input.h"
+#include "GameObject.h"
 
 class State {
 	protected:
@@ -24,41 +26,40 @@ class State {
 };
 
 
-class CircleState : public State {
-		sf::CircleShape circle;
-		sf::Vector2f currentCirclePosition{ 20.0f, 20.0f },
-			nextCirclePosition = currentCirclePosition;
-		float circleSpeed = 400.0f; // pix / sec
+class PlayingGameState : public State {
+        GameObject<CircleState> pinkCircle;
+        Input input;
 
 	public:
-        CircleState(sf::Time tickDelta, std::shared_ptr<EventQueue> eventQueue) :
-            State(tickDelta, eventQueue), circle(50.0f)
+        PlayingGameState(sf::Time tickDelta, std::shared_ptr<EventQueue> eventQueue) :
+            State(tickDelta, eventQueue), pinkCircle()
 		{
-			circle.setFillColor(sf::Color::Magenta);
-
+            pinkCircle.addComponent("inputComponent", std::make_unique<CircleInputComponent>())
+                      .addComponent("physicsComponent", std::make_unique<CirclePhysicsComponent>())
+                      .addComponent("graphicsComponent", std::make_unique<CircleGraphicsComponent>());
 		}
 
 		void update(Input input)
 		{
-            if (input.no) {
-                // TODO: with input being reused across a few logic ticks this may pop a couple of states; fix it
+            this->input = input;
+            if (input.no == KeyState::RELEASED) {
                 eventQueue->popState();
                 return;
             }
 
-			sf::Vector2f circleDirection{ input.left * -1.0f + input.right * 1.0f,
-				input.jump * -1.0f + input.crouch * 1.0f };
-			
-			auto deltaPosition = circleDirection * circleSpeed * tickDelta.asSeconds();
+            GameState gameState;
+            gameState.input = this->input;
+            gameState.tickDelta = this->tickDelta;
 
-			currentCirclePosition = nextCirclePosition;
-			nextCirclePosition = currentCirclePosition + circleDirection * circleSpeed * tickDelta.asSeconds();
+            pinkCircle.update(gameState);
 		}
 
 		virtual void render(sf::RenderWindow &renderer, float interpolationFactor)
 		{
-			circle.setPosition(interpolate(currentCirclePosition, nextCirclePosition, interpolationFactor));
-			renderer.draw(circle);
+            GameState gameState;
+            gameState.renderer = &renderer;
+
+            pinkCircle.render(gameState);
 		}
 };
 
@@ -83,10 +84,10 @@ class MenuState : public State {
 
 		void update(Input input)
 		{
-            if (input.yes) {
-                eventQueue->pushState(std::make_shared<CircleState>(tickDelta, eventQueue));
+            if (input.yes == KeyState::RELEASED) {
+                eventQueue->pushState(std::make_shared<PlayingGameState>(tickDelta, eventQueue));
             }
-            else if (input.no) {
+            else if (input.no == KeyState::RELEASED) {
                 eventQueue->exitGame();
             }
 		}

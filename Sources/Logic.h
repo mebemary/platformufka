@@ -3,6 +3,7 @@
 #include <SFML/System.hpp>
 #include <memory>
 #include <stack>
+#include <functional>
 
 #include "Interpolation.h"
 #include "State.h"
@@ -31,11 +32,12 @@ class Logic : public IStateStackable //, public IGameExitable
             stateStack.push(std::make_shared<MenuState>(logicTickDelta, eventQueue));
         }
 
-        bool update(sf::Time timeElapsed, Input input)
+        bool update(sf::Time timeElapsed, std::function<Input()> getInput)
         {
             lag += timeElapsed;
 
             while (lag > logicTickDelta) {
+                auto input = getInput();
                 getCurrentState()->update(input);
 
                 if (!gameRunning) { return false; }

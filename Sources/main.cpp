@@ -11,30 +11,72 @@ Input input;
 void updateInput(sf::Window &window) {
 	sf::Event event;
 
+    if (input.jump == KeyState::PRESSED) {
+        input.jump = KeyState::DOWN;
+    }
+    else if (input.jump == KeyState::RELEASED) {
+        input.jump = KeyState::UP;
+    }
+
+    if (input.crouch == KeyState::PRESSED) {
+        input.crouch = KeyState::DOWN;
+    }
+    else if (input.crouch == KeyState::RELEASED) {
+        input.crouch = KeyState::UP;
+    }
+
+    if (input.left == KeyState::PRESSED) {
+        input.left = KeyState::DOWN;
+    }
+    else if (input.left == KeyState::RELEASED) {
+        input.left = KeyState::UP;
+    }
+
+    if (input.right == KeyState::PRESSED) {
+        input.right = KeyState::DOWN;
+    }
+    else if (input.right == KeyState::RELEASED) {
+        input.right = KeyState::UP;
+    }
+
+    if (input.yes == KeyState::PRESSED) {
+        input.yes = KeyState::DOWN;
+    }
+    else if (input.yes == KeyState::RELEASED) {
+        input.yes = KeyState::UP;
+    }
+
+    if (input.no == KeyState::PRESSED) {
+        input.no = KeyState::DOWN;
+    }
+    else if (input.no == KeyState::RELEASED) {
+        input.no = KeyState::UP;
+    }
+
 	while (window.pollEvent(event)) {
 		if (event.type == sf::Event::Closed) {
 			window.close();
 		}
 		else if (event.type == sf::Event::KeyPressed) {
 			switch (event.key.code) {
-			case sf::Keyboard::Up:    input.jump=true; break;
-			case sf::Keyboard::Down:  input.crouch=true; break;
-			case sf::Keyboard::Left:  input.left=true; break;
-			case sf::Keyboard::Right: input.right=true; break;
-			case sf::Keyboard::Y:	  input.yes = true; break;
-			case sf::Keyboard::N:     input.no = true; break;
+                case sf::Keyboard::Up:    input.jump = KeyState::PRESSED; break;
+                case sf::Keyboard::Down:  input.crouch = KeyState::PRESSED; break;
+                case sf::Keyboard::Left:  input.left = KeyState::PRESSED; break;
+                case sf::Keyboard::Right: input.right = KeyState::PRESSED; break;
+                case sf::Keyboard::Y:	  input.yes = KeyState::PRESSED; break;
+                case sf::Keyboard::N:     input.no = KeyState::PRESSED; break;
 			}
 		}
 		else if (event.type == sf::Event::KeyReleased) {
 			switch (event.key.code) {
-			case sf::Keyboard::Up:    input.jump = false; break;
-			case sf::Keyboard::Down:  input.crouch = false; break;
-			case sf::Keyboard::Left:  input.left = false; break;
-			case sf::Keyboard::Right: input.right = false; break;
-			case sf::Keyboard::Y:	  input.yes = false; break;
-			case sf::Keyboard::N:     input.no = false; break;
+                case sf::Keyboard::Up:    input.jump = KeyState::RELEASED; break;
+                case sf::Keyboard::Down:  input.crouch = KeyState::RELEASED; break;
+                case sf::Keyboard::Left:  input.left = KeyState::RELEASED; break;
+                case sf::Keyboard::Right: input.right = KeyState::RELEASED; break;
+                case sf::Keyboard::Y:	  input.yes = KeyState::RELEASED; break;
+                case sf::Keyboard::N:     input.no = KeyState::RELEASED; break;
 			}
-		}
+        }
 	}
 }
 
@@ -47,9 +89,7 @@ int main() {
 	while (window.isOpen()) {
 		sf::Time delta = clock.restart();
 		
-		updateInput(window);
-		
-		auto shouldGameRun = logic.update(delta, input);
+        auto shouldGameRun = logic.update(delta, [&]{ updateInput(window); return input; });
         if (!shouldGameRun) {
             window.close();
             break;
