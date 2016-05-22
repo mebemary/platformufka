@@ -9,6 +9,9 @@
 #include "Input.h"
 #include "GameObject.h"
 
+#include "GameObjects/Circle.h"
+#include "GameObjects/Floor.h"
+
 class State {
 	protected:
 		sf::Time tickDelta;
@@ -27,16 +30,23 @@ class State {
 
 
 class PlayingGameState : public State {
-        GameObject<CircleState> pinkCircle;
+        std::shared_ptr<GameObject<CircleState>> pinkCircle;
+        std::shared_ptr<GameObject<FloorState>> floor;
         Input input;
 
 	public:
         PlayingGameState(sf::Time tickDelta, std::shared_ptr<EventQueue> eventQueue) :
-            State(tickDelta, eventQueue), pinkCircle()
+            State(tickDelta, eventQueue)
 		{
-            pinkCircle.addComponent("inputComponent", std::make_unique<CircleInputComponent>())
-                      .addComponent("physicsComponent", std::make_unique<CirclePhysicsComponent>())
-                      .addComponent("graphicsComponent", std::make_unique<CircleGraphicsComponent>());
+            pinkCircle = std::make_shared<GameObject<CircleState>>();
+            floor = std::make_shared<GameObject<FloorState>>();
+
+
+            (*pinkCircle).addComponent("inputComponent", std::make_unique<CircleInputComponent>())
+                         .addComponent("physicsComponent", std::make_unique<CirclePhysicsComponent>())
+                         .addComponent("graphicsComponent", std::make_unique<CircleGraphicsComponent>());
+
+            floor->addComponent("graphicsComponent", std::make_unique<FloorGraphicsComponent>());
 		}
 
 		void update(Input input)
@@ -50,8 +60,9 @@ class PlayingGameState : public State {
             GameState gameState;
             gameState.input = this->input;
             gameState.tickDelta = this->tickDelta;
+            gameState.floor = floor;
 
-            pinkCircle.update(gameState);
+            pinkCircle->update(gameState);
 		}
 
 		virtual void render(sf::RenderWindow &renderer, float interpolationFactor)
@@ -59,7 +70,8 @@ class PlayingGameState : public State {
             GameState gameState;
             gameState.renderer = &renderer;
 
-            pinkCircle.render(gameState);
+            pinkCircle->render(gameState);
+            floor->render(gameState);
 		}
 };
 

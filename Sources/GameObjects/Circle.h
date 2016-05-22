@@ -1,10 +1,13 @@
 #pragma once
 
+#include <SFML/System.hpp>
+#include <SFML/Graphics.hpp>
 #include <memory>
 #include <map>
 
 #include "../Input.h"
 #include "../GameObject.h"
+#include "Floor.h"
 
 struct CircleState
 {
@@ -14,12 +17,41 @@ struct CircleState
     sf::Vector2f direction { 0.0f, 0.0f };
 };
 
+bool isColliding(CircleState &circle, FloorState &floor)
+{
+    auto circleLeft = circle.position.x,
+        circleRight = circle.position.x + 100.0f,
+        circleTop = circle.position.y,
+        circleBottom = circle.position.y + 100.0f,
+        rectangleLeft = floor.position.x, // - floor.size.x / 2.0f,
+        rectangleRight = floor.position.x + floor.size.x, // / 2.0f,
+        rectangleTop = floor.position.y, // - floor.size.y / 2.0f,
+        rectangleBottom = floor.position.y + floor.size.y; // / 2.0f;
+
+    // std::cout << "C.X=" << "C.Y=" << "C";
+
+    return !(//r2.left > r1.right ||
+        circleLeft > rectangleRight ||
+        //r2.right < r1.left ||
+        circleRight < rectangleLeft ||
+        //r2.top > r1.bottom ||
+        circleTop > rectangleBottom ||
+        //r2.bottom < r1.top);
+        circleBottom < rectangleTop
+        );
+}
+
 class CircleInputComponent : public Component<CircleState>
 {
     public:
         void update(CircleState &circleState, GameState &gameState)
         {
             Input &input = gameState.input;
+
+            if (isColliding(circleState, gameState.getFloor()->state) && input.jump == KeyState::PRESSED) {
+                std::cout << "MIKI HOP!" << std::endl;
+                circleState.speed.y = 400.0f;
+            }
 
             circleState.direction = { (input.left == KeyState::DOWN) * -1.0f + (input.right == KeyState::DOWN) * 1.0f,
                                       (input.jump == KeyState::DOWN) * -1.0f + (input.crouch == KeyState::DOWN) * 1.0f };
@@ -60,9 +92,21 @@ class CirclePhysicsComponent : public Component<CircleState>
 
         void update(CircleState &circleState, GameState &gameState)
         {
+            // std::cout << "COLLISION: " << (isColliding(circleState, gameState.getFloor()->state) ? "Y" : "N") << std::endl
+            bool isCollidingPrim = isColliding(circleState, gameState.getFloor()->state);
+
             sf::Vector2f accelerationVector = circleState.direction * acceleration * gameState.tickDelta.asSeconds();
 
+            if (!isCollidingPrim) {
+                accelerationVector += sf::Vector2f{ 0.0f, 6.0f };
+            }
+
             sf::Vector2f circleSpeed = circleState.speed;
+
+            if (isCollidingPrim) {
+                // std::cout << "COLLISION: " << (isColliding(circleState, gameState.getFloor()->state) ? "Y" : "N") << std::endl;
+                circleSpeed.y = -(circleSpeed.y - (circleSpeed.y * 0.05)); // pseudo collision energy loss
+            }
 
             circleSpeed -= circleSpeed * frictionFactor;
 
