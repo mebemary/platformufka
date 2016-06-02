@@ -1,57 +1,71 @@
 #pragma once
 
+#include <SFML/System.hpp>
+#include <SFML/Graphics.hpp>
+
 #include <memory>
 #include <map>
+#include <vector>
+#include <algorithm>
 
 #include "Input.h"
 
-template <typename StateT>
-class GameObject;
+class State;
 
-class FloorState;
+struct BaseState
+{
+
+};
+
+class GameState;
+
+class BaseComponent
+{
+    public:
+        virtual void update(BaseState &, GameState &) = 0;
+};
+
+class BaseGameObject
+{
+    public:
+        virtual BaseState &getState() = 0;
+        virtual std::map<std::string, std::unique_ptr<BaseComponent>> &getComponents() = 0;
+
+        void update(GameState &gameState);
+        void render(GameState &gameState);
+};
+
+typedef std::tuple<std::string, std::shared_ptr<BaseGameObject>> GameObjectListPair;
 
 class GameState
 {
+        std::vector<GameObjectListPair> gameObjects;
+
     public:
         Input input;
         sf::Time tickDelta;
         sf::RenderWindow *renderer;
-        std::shared_ptr<GameObject<FloorState>> floor;
+        State *currentState;
 
-        std::shared_ptr<GameObject<FloorState>> getFloor()
-        {
-            return floor;
-        }
+        std::vector<std::shared_ptr<BaseGameObject>> getGameObjectsByTag(std::string tag);
 };
 
 template <typename StateT>
-class Component
+class Component : public BaseComponent
 {
-    public:
-        virtual void update(StateT &, GameState &) = 0;
+    //  public:
+    //    virtual void update(StateT &, GameState &) = 0;
 };
 
 template <typename StateT>
-class GameObject
+class GameObject : public BaseGameObject
 {
-        std::map<std::string, std::unique_ptr<Component<StateT>>> components;
+        StateT state; 
+        std::map<std::string, std::unique_ptr<BaseComponent>> components;
             
     public:
-        StateT state;
-
-        virtual void update(GameState &gameState)
-        {
-            for (auto &pair : components)
-            {
-                if (pair.first == "graphicsComponent") continue;
-                pair.second->update(state, gameState);
-            }
-        }
-
-        virtual void render(GameState &gameState)
-        {
-            components.at("graphicsComponent")->update(state, gameState);
-        }
+        StateT &getState() { return state; }
+        std::map<std::string, std::unique_ptr<BaseComponent>> &getComponents() { return components; }
 
         GameObject &addComponent(std::string name, std::unique_ptr<Component<StateT>> component)
         {

@@ -4,7 +4,7 @@
 
 #include "../GameObject.h"
 
-struct FloorState
+struct FloorState : public BaseState
 {
     sf::Vector2f position = { 80.0f, 400.0f };
     sf::Vector2f size = { 600.0f, 70.0f };
@@ -31,10 +31,10 @@ class FloorGraphicsComponent : public Component<FloorState>
             rectangle.setPosition({ 80.0f, 400.0f });
         }
 
-        void update(FloorState &floorState, GameState &gameState)
+        void update(BaseState &floorStateBase, GameState &gameState)
         {
             // circle.setPosition(interpolate(currentCirclePosition, nextCirclePosition, interpolationFactor));
-            // rectangle.setPosition(rectangleState.position);
+            // rectangle.setPosition(rectangleState.position);      
             gameState.renderer->draw(rectangle);
         }
 };
