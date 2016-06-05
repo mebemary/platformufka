@@ -6,6 +6,7 @@
 #include <memory>
 #include <cmath>
 #include <tuple>
+#include <list>
 
 #include "Input.h"
 
@@ -17,10 +18,8 @@ typedef std::tuple<std::string, std::shared_ptr<BaseGameObject>> GameObjectListP
 class State {
     protected:
         sf::Time tickDelta;
-        std::vector<GameObjectListPair> gameObjects;
+        std::list<GameObjectListPair> gameObjects;
         Input input;
-
-        State &addGameObject(std::shared_ptr<BaseGameObject> gameObject, std::string tag = "");
 
     public:
         // TODO: procxy methods here
@@ -33,6 +32,9 @@ class State {
         void update(Input input);
 
         void render(sf::RenderWindow &renderer, float interpolationFactor);
+
+        State &addGameObject(std::shared_ptr<BaseGameObject> gameObject, std::string tag = "");
+        State &removeGameObject(std::shared_ptr<BaseGameObject> gameObject);
 };
 
 

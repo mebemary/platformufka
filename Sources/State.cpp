@@ -17,6 +17,11 @@
         return *this;
     }
 
+    State &State::removeGameObject(std::shared_ptr<BaseGameObject> gameObject)
+    {
+        return *this;
+    }
+
     State::State(sf::Time tickDelta, std::shared_ptr<EventQueue> eventQueue) :
         tickDelta(tickDelta)
     {
@@ -42,10 +47,7 @@
     {
         this->input = input;
 
-        GameState gameState;
-        gameState.input = this->input;
-        gameState.tickDelta = this->tickDelta;
-        gameState.currentState = this;
+        GameState gameState(this);
         
         for (auto &gameObjectPair : gameObjects)
         {
@@ -55,8 +57,7 @@
 
     void State::render(sf::RenderWindow &renderer, float interpolationFactor)
     {
-        GameState gameState;
-        gameState.renderer = &renderer;
+        GameState gameState(this, renderer);
 
         for (auto &gameObjectPair : gameObjects)
         {

@@ -24,13 +24,11 @@ class MenuInputComponent : public Component<MenuState>
             // circle.setPosition(interpolate(currentCirclePosition, nextCirclePosition, interpolationFactor));
             MenuState &menuState = reinterpret_cast<MenuState &>(menuStateBase);
 
-            auto eventQueue = gameState.currentState->eventQueue;
-
-            if (gameState.input.yes == KeyState::RELEASED) {
-                eventQueue->pushState(std::make_shared<PlayingGameState>(gameState.tickDelta, eventQueue));
+            if (gameState.getInput().yes == KeyState::RELEASED) {
+                // gameState.pushState<PlayingGameState>();
             }
-            else if (gameState.input.no == KeyState::RELEASED) {
-                eventQueue->exitGame();
+            else if (gameState.getInput().no == KeyState::RELEASED) {
+                gameState.exitGame();
             }
         }
 };
@@ -39,23 +37,29 @@ class MenuGraphicsComponent : public Component<MenuState>
 {
         sf::Font font;
         sf::Text text;
+        sf::Texture texture;
+        sf::Sprite backgroundSprite;
 
     public:
         MenuGraphicsComponent()
         {
              if(!font.loadFromFile("C:\\Users\\Andrzej\\Documents\\platformufka\\Resources\\SourceCodePro.ttf")) {
-	            throw new std::exception("Couldn't load font");
+	            throw new std::runtime_error("Couldn't load font");
 	        }
 
+            texture.loadFromFile("C:\\Users\\Andrzej\\Documents\\platformufka\\66666.jpg");
+            backgroundSprite.setTexture(texture);
+            backgroundSprite.setPosition(0, 0);
 	        text.setFont(font);
 	        text.setString("Oh hai, press Y to pray game.\nPress N to kill game.");
 	        text.setCharacterSize(24);
-	        text.setColor(sf::Color::Cyan);
+	        text.setColor(sf::Color::Black);
 	        text.setPosition({ 40.0f, 40.0f });
         }
 
         void update(BaseState &circleStateBase, GameState &gameState)
         {
-            gameState.renderer->draw(text);
+            gameState.render(backgroundSprite);
+            gameState.render(text);
         }
 };

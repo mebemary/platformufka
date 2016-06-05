@@ -15,7 +15,7 @@
 
 struct EnemyState : public BaseState
 {
-    sf::Vector2f position { 480.0f, 310.0f };
+    sf::Vector2f position { 800.0f, 310.0f };
     sf::Vector2f size = { 20.f, 90.0f };
     /*sf::Vector2f accelerationVector { 0.0f, 0.0f };
     sf::Vector2f speed { 0.0f, 0.0f };
@@ -67,7 +67,7 @@ class EnemyGraphicsComponent : public Component<EnemyState>
             // circle.setPosition(circleState.position);
             EnemyState &enemyState = reinterpret_cast<EnemyState &>(enemyBaseState);
             rectangle.setPosition(enemyState.position);
-            gameState.renderer->draw(rectangle);
+            gameState.render(rectangle);
         }
 };
 

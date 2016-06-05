@@ -81,7 +81,7 @@ void updateInput(sf::Window &window) {
 }
 
 int main() {
-	sf::RenderWindow window(sf::VideoMode(800, 600, 32), "Hello SFML");
+	sf::RenderWindow window(sf::VideoMode(800, 500, 32), "PLATFORMUFKA");
 	
 	sf::Clock clock;
 	Logic logic(LOGIC_TICK_DELTA);

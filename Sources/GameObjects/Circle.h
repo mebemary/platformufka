@@ -17,7 +17,8 @@ const float JumpSpeed = 700.0f;
 
 struct CircleState : public BaseState
 {
-    sf::Vector2f position { 20.0f, 20.0f };
+    sf::Vector2f position { 100.0f, 300.0f };
+    sf::Vector2f size{ 112.0f, 112.0f };
     sf::Vector2f accelerationVector { 0.0f, 0.0f };
     sf::Vector2f speed { 0.0f, 0.0f };
     sf::Vector2f direction { 0.0f, 0.0f };
@@ -29,9 +30,9 @@ struct CircleState : public BaseState
 bool isColliding(CircleState &circle, FloorState &floor, float margin = 0.0)
 {
     auto circleLeft = circle.position.x,
-        circleRight = circle.position.x + 100.0f,
+        circleRight = circle.position.x + circle.size.x,
         circleTop = circle.position.y,
-        circleBottom = circle.position.y + 100.0f,
+        circleBottom = circle.position.y + circle.size.y,
         rectangleLeft = floor.position.x - margin,
         rectangleRight = floor.position.x + floor.size.x + margin,
         rectangleTop = floor.position.y - margin,
@@ -46,9 +47,9 @@ bool isColliding(CircleState &circle, FloorState &floor, float margin = 0.0)
 bool isColliding(CircleState &circle, EnemyState &floor, float margin = 0.0)
 {
     auto circleLeft = circle.position.x,
-        circleRight = circle.position.x + 100.0f,
+        circleRight = circle.position.x + circle.size.x,
         circleTop = circle.position.y,
-        circleBottom = circle.position.y + 100.0f,
+        circleBottom = circle.position.y + circle.size.y,
         rectangleLeft = floor.position.x - margin,
         rectangleRight = floor.position.x + floor.size.x + margin,
         rectangleTop = floor.position.y - margin,
@@ -66,10 +67,10 @@ class CircleInputComponent : public Component<CircleState>
         void update(BaseState &circleStateBase, GameState &gameState)
         {
             CircleState &circleState = reinterpret_cast<CircleState &>(circleStateBase);
-            Input &input = gameState.input;
+            Input input = gameState.getInput();
 
             if (input.no == KeyState::RELEASED || circleState.isDed) {
-                gameState.currentState->eventQueue->popState();
+                gameState.popState();
                 return;
             }
 
@@ -93,21 +94,23 @@ class CircleInputComponent : public Component<CircleState>
 
 class CircleGraphicsComponent : public Component<CircleState>
 {
-        sf::CircleShape circle;
+        sf::Texture texture;
+        sf::Sprite sprite;
 
     public:
-        CircleGraphicsComponent() :
-            circle(50.0f)
+        CircleGraphicsComponent()
         {
-            circle.setFillColor(sf::Color::Magenta);
+            texture.loadFromFile("C:\\Users\\Andrzej\\Documents\\platformufka\\koteu.png");
+            sprite.setTexture(texture);
+            //circle.setFillColor(sf::Color::Magenta);
         }
 
         void update(BaseState &circleStateBase, GameState &gameState)
         {
             // circle.setPosition(interpolate(currentCirclePosition, nextCirclePosition, interpolationFactor));
             CircleState &circleState = reinterpret_cast<CircleState &>(circleStateBase);
-            circle.setPosition(circleState.position);
-            gameState.renderer->draw(circle);
+            sprite.setPosition(circleState.position);
+            gameState.render(sprite);
         }
 };
 
@@ -149,7 +152,7 @@ class CirclePhysicsComponent : public Component<CircleState>
                 isCollidingPrim = isColliding(circleState, floor->getState());
             }
 
-            sf::Vector2f accelerationVector = circleState.direction * acceleration * gameState.tickDelta.asSeconds();
+            sf::Vector2f accelerationVector = circleState.direction * acceleration * gameState.getTickDelta().asSeconds();
 
             if (!isCollidingPrim) {
                 accelerationVector += sf::Vector2f{ 0.0f, GravityConstant };
@@ -190,7 +193,7 @@ class CirclePhysicsComponent : public Component<CircleState>
 
             circleState.speed = circleSpeed;
 
-            auto deltaPosition = circleSpeed * gameState.tickDelta.asSeconds();
+            auto deltaPosition = circleSpeed * gameState.getTickDelta().asSeconds();
 
             // currentCirclePosition = nextCirclePosition;
             circleState.position += deltaPosition;

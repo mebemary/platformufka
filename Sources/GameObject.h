@@ -40,14 +40,26 @@ typedef std::tuple<std::string, std::shared_ptr<BaseGameObject>> GameObjectListP
 class GameState
 {
         std::vector<GameObjectListPair> gameObjects;
-
-    public:
-        Input input;
-        sf::Time tickDelta;
-        sf::RenderWindow *renderer;
+        //Input input;
+        //sf::Time tickDelta;
+        sf::RenderWindow &renderer;
         State *currentState;
 
+    public:
+        GameState(State *curentState);
+        GameState(State *curentState, sf::RenderWindow &renderer);
+        Input getInput();
+        sf::Time getTickDelta();
+        sf::RenderWindow *getRenderWindow();
         std::vector<std::shared_ptr<BaseGameObject>> getGameObjectsByTag(std::string tag);
+        
+        GameState &addGameObject(std::shared_ptr<BaseGameObject> gameObject, std::string tag = "");
+        GameState &removeGameObject(std::shared_ptr<BaseGameObject> gameObject);
+        template<typename StateT> GameState &pushState();
+        GameState &popState();
+        GameState &exitGame();
+        GameState &render(sf::Drawable &drawable);
+
 };
 
 template <typename StateT>
