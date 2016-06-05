@@ -27,17 +27,27 @@
 
 // === GameState
 
-        /*GameState(State *curentState) :
-            currentState(currentState)
+        GameState::GameState(State *currentState) :
+            currentState(currentState), renderer(nullptr)
         {
 
-        }*/
+        }
 
-        /*GameState(State *curentState, sf::RenderWindow &renderer) :
-            renderer(renderer), GameState(currentState)
+        GameState::GameState(State *currentState, sf::RenderWindow *renderer) :
+            currentState(currentState), renderer(renderer)
         {
 
-        }*/
+        }
+
+        Input GameState::getInput()
+        {
+            return currentState->getInput();
+        }
+
+        sf::Time GameState::getTickDelta()
+        {
+            return currentState->getTickDelta();
+        }
 
         std::vector<std::shared_ptr<BaseGameObject>> GameState::getGameObjectsByTag(std::string tag)
         {   
@@ -50,34 +60,26 @@
             return *this;
         }
 
-        /*GameState &GameState::removeGameObject(std::shared_ptr<BaseGameObject> gameObject)
+        GameState &GameState::removeGameObject(std::shared_ptr<BaseGameObject> gameObject)
         {
-            currrentState->removeGameObject(gameObject);
-            return *this;
-        }*/
-
-        template<typename StateT>
-        GameState &GameState::pushState()
-        {
-            auto state = std::make_shared<PlayingGameState>(tickDelta, eventQueue);
-            currentState->eventQueue->statePush(state);
+            currentState->removeGameObject(gameObject);
             return *this;
         }
 
         GameState &GameState::popState()
         {
-            currentState->eventQueue->statePop();
+            currentState->eventQueue->popState();
             return *this;
         }
 
         GameState &GameState::exitGame()
         {
-            currentState->eventQueue->statePop();
+            currentState->eventQueue->exitGame();
             return *this;
         }
 
         GameState &GameState::render(sf::Drawable &drawable)
         {
-            currentState->renderer->draw(drawable);
+            renderer->draw(drawable);
             return *this;
         }

@@ -57,12 +57,22 @@
 
     void State::render(sf::RenderWindow &renderer, float interpolationFactor)
     {
-        GameState gameState(this, renderer);
+        GameState gameState(this, &renderer);
 
         for (auto &gameObjectPair : gameObjects)
         {
             std::get<1>(gameObjectPair)->render(gameState);
         }
+    }
+
+    Input State::getInput()
+    {
+        return input;
+    }
+
+    sf::Time State::getTickDelta()
+    {
+        return tickDelta;
     }
 
 // ======================

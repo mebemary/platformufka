@@ -9,8 +9,9 @@
 #include <list>
 
 #include "Input.h"
+#include "EventQueue.h"
+#include "GameObject.h"
 
-class EventQueue;
 class BaseGameObject;
 
 typedef std::tuple<std::string, std::shared_ptr<BaseGameObject>> GameObjectListPair;
@@ -22,10 +23,13 @@ class State {
         Input input;
 
     public:
+        State(sf::Time tickDelta, std::shared_ptr<EventQueue> eventQueue);
+
+        Input getInput();
+        sf::Time getTickDelta();
+
         // TODO: procxy methods here
         std::shared_ptr<EventQueue> eventQueue;
-
-        State(sf::Time tickDelta, std::shared_ptr<EventQueue> eventQueue);
 
         std::vector<std::shared_ptr<BaseGameObject>> getGameObjectsByTag(std::string tag);
 

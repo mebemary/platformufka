@@ -18,7 +18,7 @@ const float JumpSpeed = 700.0f;
 struct CircleState : public BaseState
 {
     sf::Vector2f position { 100.0f, 300.0f };
-    sf::Vector2f size{ 112.0f, 112.0f };
+    sf::Vector2f size{ 112.0f, 100.0f };
     sf::Vector2f accelerationVector { 0.0f, 0.0f };
     sf::Vector2f speed { 0.0f, 0.0f };
     sf::Vector2f direction { 0.0f, 0.0f };

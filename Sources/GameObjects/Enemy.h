@@ -87,6 +87,6 @@ class EnemyPhysicsComponent : public Component<EnemyState>
         void update(BaseState &enemyBaseState, GameState &gameState)
         {
             EnemyState &enemyState = reinterpret_cast<EnemyState &>(enemyBaseState);
-            enemyState.position.x -= 1.0f;
+            enemyState.position.x -= 2.0f;
         }
 };

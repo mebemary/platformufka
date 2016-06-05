@@ -25,7 +25,7 @@ class MenuInputComponent : public Component<MenuState>
             MenuState &menuState = reinterpret_cast<MenuState &>(menuStateBase);
 
             if (gameState.getInput().yes == KeyState::RELEASED) {
-                // gameState.pushState<PlayingGameState>();
+                gameState.pushState<PlayingGameState>();
             }
             else if (gameState.getInput().no == KeyState::RELEASED) {
                 gameState.exitGame();

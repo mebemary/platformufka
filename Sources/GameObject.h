@@ -9,8 +9,7 @@
 #include <algorithm>
 
 #include "Input.h"
-
-class State;
+#include "State.h"
 
 struct BaseState
 {
@@ -42,12 +41,12 @@ class GameState
         std::vector<GameObjectListPair> gameObjects;
         //Input input;
         //sf::Time tickDelta;
-        sf::RenderWindow &renderer;
+        sf::RenderWindow *renderer;
         State *currentState;
 
     public:
-        GameState(State *curentState);
-        GameState(State *curentState, sf::RenderWindow &renderer);
+        GameState(State *currentState);
+        GameState(State *currentState, sf::RenderWindow *renderer);
         Input getInput();
         sf::Time getTickDelta();
         sf::RenderWindow *getRenderWindow();
@@ -55,7 +54,13 @@ class GameState
         
         GameState &addGameObject(std::shared_ptr<BaseGameObject> gameObject, std::string tag = "");
         GameState &removeGameObject(std::shared_ptr<BaseGameObject> gameObject);
-        template<typename StateT> GameState &pushState();
+        template<typename StateT>
+        GameState &pushState()
+        {
+            auto state = std::make_shared<StateT>(getTickDelta(), currentState->eventQueue);
+            currentState->eventQueue->pushState(state);
+            return *this;
+        }
         GameState &popState();
         GameState &exitGame();
         GameState &render(sf::Drawable &drawable);
