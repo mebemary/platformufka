@@ -22,7 +22,11 @@
 
         void BaseGameObject::render(GameState &gameState)
         {
-            getComponents().at("graphicsComponent")->update(getState(), gameState);
+            auto graphicsComponent = getComponents().find("graphicsComponent");
+                
+            if (graphicsComponent != getComponents().end()) {
+                (*graphicsComponent).second->update(getState(), gameState);
+            }
         }
 
 // === GameState

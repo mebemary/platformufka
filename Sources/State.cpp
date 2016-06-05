@@ -8,6 +8,7 @@
 #include "GameObjects/Floor.h"
 #include "GameObjects/Menu.h"
 #include "GameObjects/Enemy.h"
+#include "GameObjects/EnemySpawner.h"
 
 // =====================
 
@@ -19,6 +20,9 @@
 
     State &State::removeGameObject(std::shared_ptr<BaseGameObject> gameObject)
     {
+        gameObjects.remove_if([&](std::tuple<std::string, std::shared_ptr<BaseGameObject>> pair) { 
+            return std::get<1>(pair) == gameObject;
+        });
         return *this;
     }
 
@@ -82,7 +86,8 @@
     {
         auto pinkCircle = std::make_shared<GameObject<CircleState>>();
         auto floor = std::make_shared<GameObject<FloorState>>();
-        auto enemy = std::make_shared<GameObject<EnemyState>>();
+        // auto enemy = std::make_shared<GameObject<EnemyState>>();
+        auto spawner = std::make_shared<GameObject<EnemySpawnerState>>();
 
 
         (*pinkCircle).addComponent("inputComponent", std::make_unique<CircleInputComponent>())
@@ -91,12 +96,15 @@
 
         floor->addComponent("graphicsComponent", std::make_unique<FloorGraphicsComponent>());
 
-        (*enemy).addComponent("physicsComponent", std::make_unique<EnemyPhysicsComponent>())
-                .addComponent("graphicsComponent", std::make_unique<EnemyGraphicsComponent>());
+        // (*enemy).addComponent("physicsComponent", std::make_unique<EnemyPhysicsComponent>())
+        //         .addComponent("graphicsComponent", std::make_unique<EnemyGraphicsComponent>());
+
+        (*spawner).addComponent("enemySpawnerComponent", std::make_unique<EnemySpawnerComponent>());
 
         addGameObject(floor, "floor");
         addGameObject(pinkCircle, "player");
-        addGameObject(enemy, "enemy");
+        //addGameObject(enemy, "enemy");
+        addGameObject(spawner, "enemySpawner");
     }
 
 // ====================

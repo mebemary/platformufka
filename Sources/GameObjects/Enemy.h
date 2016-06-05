@@ -15,7 +15,7 @@
 
 struct EnemyState : public BaseState
 {
-    sf::Vector2f position { 800.0f, 310.0f };
+    sf::Vector2f position = { 800.0f, 310.0f };
     sf::Vector2f size = { 20.f, 90.0f };
     /*sf::Vector2f accelerationVector { 0.0f, 0.0f };
     sf::Vector2f speed { 0.0f, 0.0f };
@@ -88,5 +88,22 @@ class EnemyPhysicsComponent : public Component<EnemyState>
         {
             EnemyState &enemyState = reinterpret_cast<EnemyState &>(enemyBaseState);
             enemyState.position.x -= 2.0f;
+        }
+};
+
+class EnemyAiComponent : public Component < EnemyState >
+{
+        sf::Vector2f spawnPosition;
+
+    public:
+        EnemyAiComponent(sf::Vector2f spawnPosition) :
+            spawnPosition(spawnPosition)
+        {
+
+        }
+
+        void update(BaseState &enemyBaseState, GameState &gameState)
+        {
+            // enemyState. { 800.0f, 310.0f }
         }
 };

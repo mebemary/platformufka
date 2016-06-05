@@ -7,6 +7,7 @@
 #include <map>
 #include <vector>
 #include <algorithm>
+#include <list>
 
 #include "Input.h"
 #include "State.h"
@@ -38,7 +39,7 @@ typedef std::tuple<std::string, std::shared_ptr<BaseGameObject>> GameObjectListP
 
 class GameState
 {
-        std::vector<GameObjectListPair> gameObjects;
+        std::list<GameObjectListPair> gameObjects;
         //Input input;
         //sf::Time tickDelta;
         sf::RenderWindow *renderer;

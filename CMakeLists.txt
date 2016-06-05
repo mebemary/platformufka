@@ -9,7 +9,7 @@ set(SOURCE_FILES Sources/main.cpp Sources/main.h Sources/Logic.h Sources/Interpo
                  Sources/State.h Sources/Input.h Sources/EventQueue.h Sources/IStateStackable.h
                  Sources/GameObject.h Sources/GameObjects/Circle.h Sources/GameObjects/Floor.h
                  Sources/State.cpp Sources/Logic.cpp Sources/GameObject.cpp Sources/GameObjects/Menu.h
-                 Sources/GameObjects/Enemy.h)
+                 Sources/GameObjects/Enemy.h Sources/GameObjects/EnemySpawner.h)
 add_executable(SFMLtest ${SOURCE_FILES})
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake_modules")
