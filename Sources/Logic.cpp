@@ -39,7 +39,7 @@
 
         float interpolationFactor = lag / logicTickDelta;
 
-        getCurrentState()->render(renderer, interpolationFactor);
+        getCurrentState()->render(renderer , interpolationFactor);
 
         renderer.display();
     }

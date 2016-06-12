@@ -15,8 +15,8 @@
 
 struct EnemyState : public BaseState
 {
-    sf::Vector2f position = { 800.0f, 310.0f };
-    sf::Vector2f size = { 20.f, 90.0f };
+    sf::Vector2f position = { 800.0f, 305.0f };
+    sf::Vector2f size = { 80.f, 90.0f };
     /*sf::Vector2f accelerationVector { 0.0f, 0.0f };
     sf::Vector2f speed { 0.0f, 0.0f };
     sf::Vector2f direction { 0.0f, 0.0f };*/
@@ -51,33 +51,26 @@ struct EnemyState : public BaseState
 class EnemyGraphicsComponent : public Component<EnemyState>
 {
         sf::RectangleShape rectangle;
+        sf::Texture texture;
+        sf::Sprite sprite;
 
     public:
-        EnemyGraphicsComponent() :
-            rectangle({20.f, 90.0f})
+        EnemyGraphicsComponent() 
         {
-            rectangle.setFillColor(sf::Color::Blue);
-            rectangle.setPosition({ 480.0f, 310.0f });
+            texture.loadFromFile("C:\\Users\\Andrzej\\Documents\\platformufka\\snek.png");
+            sprite.setTexture(texture);
         }
 
         void update(BaseState &enemyBaseState, GameState &gameState)
         {
-            // // circle.setPosition(interpolate(currentCirclePosition, nextCirclePosition, interpolationFactor));
-            // CircleState &circleState = reinterpret_cast<CircleState &>(circleStateBase);
-            // circle.setPosition(circleState.position);
             EnemyState &enemyState = reinterpret_cast<EnemyState &>(enemyBaseState);
-            rectangle.setPosition(enemyState.position);
-            gameState.render(rectangle);
+            sprite.setPosition(enemyState.position);
+            gameState.render(sprite);
         }
 };
 
 class EnemyPhysicsComponent : public Component<EnemyState>
 {
-       /* float acceleration = 600.0f;
-        float maxSpeed = 400.0f;
-        float frictionFactor = 0.01f;
-        float movementThreshold = 0.0001f;*/
-
     public:
         EnemyPhysicsComponent()
         {

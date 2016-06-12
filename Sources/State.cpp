@@ -9,6 +9,7 @@
 #include "GameObjects/Menu.h"
 #include "GameObjects/Enemy.h"
 #include "GameObjects/EnemySpawner.h"
+#include "GameObjects/GameBackground.h"
 
 // =====================
 
@@ -83,12 +84,14 @@
 
     PlayingGameState::PlayingGameState(sf::Time tickDelta, std::shared_ptr<EventQueue> eventQueue) :
         State(tickDelta, eventQueue)
-    {
+    {       
         auto pinkCircle = std::make_shared<GameObject<CircleState>>();
         auto floor = std::make_shared<GameObject<FloorState>>();
         // auto enemy = std::make_shared<GameObject<EnemyState>>();
         auto spawner = std::make_shared<GameObject<EnemySpawnerState>>();
+        auto background = std::make_shared<GameObject<GameBackgroundState>>();
 
+        background->addComponent("graphicsComponent", std::make_unique<GameBackgroundGraphicsComponent>());
 
         (*pinkCircle).addComponent("inputComponent", std::make_unique<CircleInputComponent>())
                      .addComponent("physicsComponent", std::make_unique<CirclePhysicsComponent>())
@@ -101,6 +104,7 @@
 
         (*spawner).addComponent("enemySpawnerComponent", std::make_unique<EnemySpawnerComponent>());
 
+        addGameObject(background, "background");
         addGameObject(floor, "floor");
         addGameObject(pinkCircle, "player");
         //addGameObject(enemy, "enemy");

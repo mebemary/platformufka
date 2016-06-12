@@ -21,21 +21,26 @@ class FloorInputComponent : public Component<FloorState>
 
 class FloorGraphicsComponent : public Component<FloorState>
 {
-        sf::RectangleShape rectangle;
+        //sf::RectangleShape rectangle;
+        sf::Texture texture;
+        sf::Sprite sprite;
 
     public:
-        FloorGraphicsComponent() :
-            rectangle({800.0f, 200.0f})
+        FloorGraphicsComponent() //:
+            //rectangle({800.0f, 200.0f})
         {
-            rectangle.setFillColor(sf::Color::Red);
-            rectangle.setPosition({ 0.0f, 400.0f });
+            texture.loadFromFile("C:\\Users\\Andrzej\\Documents\\platformufka\\ground.png");
+            sprite.setTexture(texture);
+            //rectangle.setFillColor(sf::Color::Red);
+            //rectangle.setPosition({ 0.0f, 400.0f });
+            sprite.setPosition(0.0f, 400.0f);
         }
 
         void update(BaseState &floorStateBase, GameState &gameState)
         {
-            // circle.setPosition(interpolate(currentCirclePosition, nextCirclePosition, interpolationFactor));
             // rectangle.setPosition(rectangleState.position);      
-            gameState.render(rectangle);
+            //gameState.render(rectangle);
+            gameState.render(sprite);
         }
 };
 

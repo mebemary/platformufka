@@ -47,7 +47,7 @@ class MenuGraphicsComponent : public Component<MenuState>
 	            throw new std::runtime_error("Couldn't load font");
 	        }
 
-            texture.loadFromFile("C:\\Users\\Andrzej\\Documents\\platformufka\\66666.jpg");
+            texture.loadFromFile("C:\\Users\\Andrzej\\Documents\\platformufka\\backgroundmenu.png");
             backgroundSprite.setTexture(texture);
             backgroundSprite.setPosition(0, 0);
 	        text.setFont(font);
